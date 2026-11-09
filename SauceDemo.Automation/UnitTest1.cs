@@ -1,6 +1,7 @@
 ﻿using Microsoft.Playwright;
 using Microsoft.Playwright.NUnit;
 using NUnit.Framework;
+using SauceDemo.Automation.Pages; // <--- Links to the newly made pages folder!
 using System;
 using System.Threading.Tasks;
 
@@ -9,7 +10,6 @@ namespace SauceDemo.Automation
     [TestFixture]
     public class LoginTests : PageTest
     {
-        // Constructor keeps Headed mode and your 1.5-second speed control active
         public LoginTests()
         {
             Environment.SetEnvironmentVariable("HEADED", "1");
@@ -17,70 +17,56 @@ namespace SauceDemo.Automation
         }
 
         [Test]
+        //Instantiates LoginPge object with live browser 'page'.
         public async Task SuccessfulLoginTest()
         {
-            await Page.GotoAsync("https://saucedemo.com");
-            await Page.Locator("#user-name").FillAsync("standard_user");
-            await Page.Locator("#password").FillAsync("secret_sauce");
-            await Page.ClickAsync("#login-button");
+            var loginPage = new LoginPage(Page);
 
-            var currentUrl = Page.Url;
-            Assert.That(currentUrl, Does.Contain("inventory.html"));
+            await loginPage.LoadAsync();
+            await loginPage.LoginAsync("standard_user", "secret_sauce");
+
+            Assert.That(Page.Url, Does.Contain("inventory.html"));
         }
 
         [Test]
         public async Task FailedLoginShowsErrorMessageTest()
         {
-            await Page.GotoAsync("https://saucedemo.com");
-            await Page.Locator("#user-name").FillAsync("standard_user");
+            var loginPage = new LoginPage(Page);
 
-            // 1. Enter an intentionally WRONG password
-            await Page.Locator("#password").FillAsync("wrong_password");
-            await Page.ClickAsync("#login-button");
+            await loginPage.LoadAsync();
+            await loginPage.LoginAsync("standard_user", "wrong_password");
 
-            // 2. Locate the red error text container that pops up on the screen
-            var errorMessageLocator = Page.Locator("data-test=error");
-
-            // 3. Extract the text value inside that element
-            string actualErrorMessage = await errorMessageLocator.TextContentAsync();
-
-            // 4. Assert that the error matches the official system warning
-            Assert.That(actualErrorMessage, Does.Contain("Username and password do not match any user in this service"));
+            string errorMessage = await loginPage.GetErrorMessageAsync();
+            Assert.That(errorMessage, Does.Contain("Username and password do not match any user in this service"));
         }
 
         [Test]
         public async Task AddItemToShoppingCartTest()
         {
-            // 1. Log in cleanly to get to the dashboard
-            await Page.GotoAsync("https://saucedemo.com");
-            await Page.Locator("#user-name").FillAsync("standard_user");
-            await Page.Locator("#password").FillAsync("secret_sauce");
-            await Page.ClickAsync("#login-button");
+            var loginPage = new LoginPage(Page);
+            var inventoryPage = new InventoryPage(Page);
 
-            // 2. Click the 'Add to Cart' button for the first item (Sauce Labs Backpack)
-            // This locator points directly to the item's unique button ID
-            await Page.ClickAsync("#add-to-cart-sauce-labs-backpack");
+            await loginPage.LoadAsync();
+            await loginPage.LoginAsync("standard_user", "secret_sauce");
 
-            // 3. Locate the shopping cart badge icon in the top right corner
-            var cartBadgeLocator = Page.Locator(".shopping_cart_badge");
+            // Multi-step journey transitions smoothly to the dashboard page object
+            await inventoryPage.AddBackpackToCartAsync();
 
-            // 4. Grab the visible text count inside the badge
-            string cartCount = await cartBadgeLocator.TextContentAsync();
-
-            // 5. Verification: Assert that the cart badge text value is exactly "1"
+            string cartCount = await inventoryPage.GetCartBadgeCountAsync();
             Assert.That(cartCount, Is.EqualTo("1"), "The cart badge did not update to 1 after adding an item.");
         }
+
         [Test]
         public async Task BlankFieldsLoginErrorTest()
         {
-            await Page.GotoAsync("https://saucedemo.com"); 
-            await Page.Locator("#user-name").InputValueAsync();
-            await Page.Locator("#password").InputValueAsync();
-            await Page.ClickAsync("#login-button");
-            var errorMessageLocator = Page.Locator("[data-test='error']");
-            string actualErrorMessage = await errorMessageLocator.TextContentAsync();
-            Assert.That(actualErrorMessage, Does.Contain("Epic sadface: Username is required"));
+            var loginPage = new LoginPage(Page);
 
+            await loginPage.LoadAsync();
+            // Passing empty strings to trigger boundary validations
+            await loginPage.LoginAsync("", "");
+
+            string? errorMessage = await loginPage.GetErrorMessageAsync();
+            Assert.That(errorMessage, Does.Contain("Epic sadface: Username is required"));
         }
     }
 }
