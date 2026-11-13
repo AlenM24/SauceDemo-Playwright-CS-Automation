@@ -17,6 +17,6 @@ jobs:
     - name: Build project
       run: dotnet build --configuration Release
     - name: Install Playwright Browsers
-      run: pwsh SauceDemo.Automation/bin/Release/net8.0/playwright.ps1 install --with-deps
+      run: pwsh $(find . -name playwright.ps1 | head -n 1) install --with-deps
     - name: Run tests
       run: dotnet test --configuration Release --no-build
