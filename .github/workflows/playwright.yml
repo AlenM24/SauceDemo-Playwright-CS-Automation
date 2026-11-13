@@ -1,0 +1,22 @@
+name: Playwright .NET Tests
+on:
+push:
+branches: [ "main", "master" ]
+pull_request:
+branches: [ "main", "master" ]
+jobs:
+test:
+timeout-minutes: 60
+runs-on: ubuntu-latest
+steps:
+- uses: actions/checkout@v4
+- name: Setup .NET
+uses: actions/setup-dotnet@v4
+with:
+dotnet-version: 8.0.x
+- name: Build project
+run: dotnet build --configuration Release
+- name: Install Playwright Browsers
+run: pwsh SauceDemo.Automation/bin/Release/net8.0/playwright.ps1 install --with-deps
+- name: Run tests
+run: dotnet test --configuration Release --no-build
