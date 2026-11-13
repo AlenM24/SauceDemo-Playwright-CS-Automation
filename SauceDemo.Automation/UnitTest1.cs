@@ -13,8 +13,8 @@ namespace SauceDemo.Automation
         //Constructor: runs to show the browser window in slow-mo.
         public LoginTests()
         {
-            Environment.SetEnvironmentVariable("HEADED", "1");
-            Environment.SetEnvironmentVariable("PLAYWRIGHT_SLOW_MO", "1500");
+            //Environment.SetEnvironmentVariable("HEADED", "1");
+            //Environment.SetEnvironmentVariable("PLAYWRIGHT_SLOW_MO", "1500");
         }
 
         // --- POSITIVE SCENARIOS ---
