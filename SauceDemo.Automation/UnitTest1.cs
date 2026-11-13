@@ -7,9 +7,10 @@ using System.Threading.Tasks;
 
 namespace SauceDemo.Automation
 {
-    [TestFixture]
+    [TestFixture]//Marks this class as a container forNunit test
     public class LoginTests : PageTest
     {
+        //Constructor: runs to show the browser window in slow-mo.
         public LoginTests()
         {
             Environment.SetEnvironmentVariable("HEADED", "1");
@@ -18,14 +19,16 @@ namespace SauceDemo.Automation
 
         // --- POSITIVE SCENARIOS ---
 
-        [Test]
+        [Test]//Marks a single executable test case.
         public async Task SuccessfulLoginTest()
         {
+            //Creates the page helper.
             var loginPage = new LoginPage(Page);
 
             await loginPage.LoadAsync();
             await loginPage.LoginAsync("standard_user", "secret_sauce");
 
+            //Assert that the page URL has changed to the inventory one.
             Assert.That(Page.Url, Does.Contain("inventory.html"));
         }
 

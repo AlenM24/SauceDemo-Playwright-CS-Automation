@@ -7,12 +7,13 @@ namespace SauceDemo.Automation.Pages
     {
         private readonly IPage _page;
 
+        //Constructor: binds the same active browser tab to this second page object.
         public InventoryPage(IPage page)
         {
             _page = page;
         }
 
-        // Dashboard specific elements
+        // Dashboard specific elements locators.
         private ILocator AddBackpackButton => _page.Locator("#add-to-cart-sauce-labs-backpack");
         private ILocator CartBadge => _page.Locator(".shopping_cart_badge");
 
@@ -21,6 +22,7 @@ namespace SauceDemo.Automation.Pages
             await AddBackpackButton.ClickAsync();
         }
 
+        //Extracts the numbershowing in the shopping cart circle.
         public async Task<string> GetCartBadgeCountAsync()
         {
             return await CartBadge.TextContentAsync() ?? "";
