@@ -33,7 +33,7 @@ The suite covers critical regression paths, explicit user flows, and front-end v
 
 ## Roadmap & Framework Adjustments
 This project is built to actively expand. Next structural steps include:
-* [ ] Reorganizing the test files into a decoupled **Page Object Model (POM)** pattern to keep locators separated from test logic.
-* [ ] Implementing parameterized `[TestCase]` input matrices in NUnit to scale data-driven validation scenarios without duplicate code.
-* [ ] Adding an API testing layer utilizing RestSharp/Postman integration suites.
-* [ ] Setting up a headless regression pipeline hook via a native **GitHub Actions CI/CD workflow** to trigger tests automatically on every repository code push.
+* [x] Reorganizing the test files into a decoupled **Page Object Model (POM)** pattern to keep locators separated from test logic.
+* [x] Implementing parameterized `[TestCase]` input matrices in NUnit to scale data-driven validation scenarios without duplicate code.
+* [x] Adding an API testing layer utilizing RestSharp/Postman integration suites.
+* [x] Setting up a headless regression pipeline hook via a native **GitHub Actions CI/CD workflow** to trigger tests automatically on every repository code push.
